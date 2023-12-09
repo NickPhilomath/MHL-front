@@ -1,0 +1,11 @@
+.my-sidebar {
+  position: fixed;
+  height: 100vh;
+  box-shadow: 0 0 4px 2px rgb(150, 150, 150);
+}
+
+.my-table-container {
+  margin-left: 280px;
+  width: calc(100% - 280px);
+  padding: 30px 50px
+}

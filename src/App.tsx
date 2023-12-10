@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
@@ -8,11 +8,15 @@ import Sidebar from "./components/Sidebar";
 const Url = "http://127.0.0.1:8000/api/trucks";
 
 function App() {
+  const [data, setData] = useState([]);
+
   useEffect(() => {
     const controller = new AbortController();
     axios
       .get(Url, { signal: controller.signal })
-      .then((res) => console.log(res))
+      .then((res) => {
+        setData(res.data);
+      })
       .catch((err) => console.log(err));
 
     return () => controller.abort();
@@ -22,7 +26,7 @@ function App() {
     <>
       <Sidebar />
       <div className="my-table-container">
-        <Table />
+        <Table data={data} />
       </div>
     </>
   );

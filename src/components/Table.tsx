@@ -42,6 +42,26 @@ const Table = ({ data }: Props) => {
     return next.weather.wind.speed - prev.weather.wind.speed;
   });
 
+  const mps2mph = (mps: number) => {
+    return parseFloat((mps * 2.237).toFixed(2));
+  };
+
+  const getWindTextColor = (speed: number) => {
+    /* 
+    >-15 - green
+    15-25 - yellow
+    25-35 - orange
+    35-> - red
+    */
+    return speed < 15
+      ? "m-good"
+      : speed < 25
+      ? "m-warn"
+      : speed < 35
+      ? "m-risky"
+      : "m-danger";
+  };
+
   return (
     <table className="table">
       <thead>
@@ -51,12 +71,13 @@ const Table = ({ data }: Props) => {
           <th scope="col">Location</th>
           <th scope="col">Speed (mph)</th>
           <th scope="col">Weather</th>
-          <th scope="col">Wind (m/s)</th>
-          <th scope="col">Temp</th>
+          <th scope="col">Wind (mph)</th>
+          <th scope="col">Temp (°C)</th>
         </tr>
       </thead>
       <tbody>
-        {filteredData.map((truck, index) => {
+        {sortedData.map((truck, index) => {
+          const windSpeed = mps2mph(truck.weather.wind.speed);
           return (
             <tr key={truck.id}>
               <td>{index + 1}</td>
@@ -67,7 +88,9 @@ const Table = ({ data }: Props) => {
               </td>
               <td>{truck.location.speed}</td>
               <td>{truck.weather.status}</td>
-              <td>{truck.weather.wind.speed}</td>
+              <td className={"text-bold " + getWindTextColor(windSpeed)}>
+                {windSpeed}
+              </td>
               <td>{truck.weather.temp}</td>
             </tr>
           );

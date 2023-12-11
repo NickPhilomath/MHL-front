@@ -1,6 +1,7 @@
 import { useForm, FieldValues } from "react-hook-form";
 import axios from "axios";
 import { BaseUrl } from "..";
+import { useState } from "react";
 
 interface LoginData {
   username: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const Login = ({ setAuthorized }: Props) => {
+  const [isLoading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -19,6 +21,7 @@ const Login = ({ setAuthorized }: Props) => {
   } = useForm<LoginData>();
 
   const onSubmit = async (data: FieldValues) => {
+    setLoading(true);
     console.log(data);
     try {
       const response = await axios.post(
@@ -40,8 +43,10 @@ const Login = ({ setAuthorized }: Props) => {
         })
       );
       setAuthorized(true);
+      setLoading(false);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -76,9 +81,20 @@ const Login = ({ setAuthorized }: Props) => {
           <p className="text-danger">The password field is required</p>
         )}
       </div>
-      <button disabled={!isValid} className="btn btn-primary" type="submit">
-        Sign in
-      </button>
+      {!isLoading ? (
+        <button disabled={!isValid} className="btn btn-primary" type="submit">
+          Sign in
+        </button>
+      ) : (
+        <button className="btn btn-primary" type="button">
+          <span
+            className="spinner-grow spinner-grow-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          Loading...
+        </button>
+      )}
     </form>
   );
 };

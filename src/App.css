@@ -27,3 +27,16 @@
   background-color: #f5f5f5;
   text-align: center;
 }
+
+.m-good {
+  color: green !important;
+}
+.m-warn {
+  color: rgb(205, 193, 16) !important;
+}
+.m-risky {
+  color: rgb(255, 119, 0) !important;
+}
+.m-danger {
+  color: red !important;
+}

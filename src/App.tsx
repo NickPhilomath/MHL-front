@@ -10,14 +10,12 @@ import { BaseUrl } from ".";
 function App() {
   const [isAuthorized, setAuthorized] = useState(false);
   const [data, setData] = useState([]);
+  const [numFentch, setNumFetch] = useState(0);
 
-  useEffect(() => {
-    if (!isAuthorized) return;
-    const controller = new AbortController();
+  const fetchData = () => {
     const localAuth = window.localStorage.getItem("auth");
     axios
       .get(`${BaseUrl}/api/trucks`, {
-        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
           Authorization:
@@ -28,9 +26,24 @@ function App() {
         setData(res.data);
       })
       .catch((err) => console.log(err));
+  };
 
-    return () => controller.abort();
+  useEffect(() => {
+    if (!isAuthorized) return;
+    fetchData();
+
+    return;
   }, [isAuthorized]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNumFetch(numFentch + 1);
+      fetchData();
+    }, 1000 * 60 * 5);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [numFentch]);
 
   return (
     <>
@@ -38,6 +51,22 @@ function App() {
         <>
           <Sidebar />
           <div className="my-table-container">
+            <div className="row">
+              <div className="col">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setNumFetch(numFentch + 1);
+                    fetchData();
+                  }}
+                >
+                  Refresh
+                </button>
+              </div>
+              <div className="col">
+                <h3>Refreshed {numFentch} times</h3>
+              </div>
+            </div>
             <Table data={data} />
           </div>
         </>

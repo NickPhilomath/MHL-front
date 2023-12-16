@@ -1,82 +1,54 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.css";
-import "./App.css";
-import Table from "./components/Table";
+import { Grid, GridItem, Show } from "@chakra-ui/react";
+import "./styles/App.css";
 import Sidebar from "./components/Sidebar";
-import Login from "./components/Login";
-import { BaseUrl } from ".";
+import Navbar from "./components/Navbar";
+import DashBoard from "./components/DashBoard";
 
 function App() {
-  const [isAuthorized, setAuthorized] = useState(false);
-  const [data, setData] = useState([]);
-  const [numFentch, setNumFetch] = useState(0);
+  // const fetchData = () => {
+  // const localAuth = window.localStorage.getItem("auth");
+  // axios
+  //   .get(`${BaseUrl}/api/trucks`, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization:
+  //         "JWT " + JSON.parse(localAuth ? localAuth : "").accessToken,
+  //     },
+  //   })
+  //   .then((res) => {
+  //     setData(res.data);
+  //   })
+  //   .catch((err) => console.log(err));
+  //   setData([]);
+  // };
 
-  const fetchData = () => {
-    const localAuth = window.localStorage.getItem("auth");
-    axios
-      .get(`${BaseUrl}/api/trucks`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "JWT " + JSON.parse(localAuth ? localAuth : "").accessToken,
-        },
-      })
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  useEffect(() => {
-    if (!isAuthorized) return;
-    fetchData();
-
-    return;
-  }, [isAuthorized]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNumFetch(numFentch + 1);
-      fetchData();
-    }, 1000 * 60 * 5);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [numFentch]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setNumFetch(numFentch + 1);
+  //     fetchData();
+  //   }, 1000 * 60 * 5);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [numFentch]);
 
   return (
-    <>
-      {isAuthorized && (
-        <>
+    <Grid
+      templateAreas={{ base: `"nav" "main"`, lg: `"nav nav" "aside main"` }}
+      // gridTemplateColumns={"230px 1fr"}
+    >
+      <GridItem area="nav">
+        <Navbar />
+      </GridItem>
+      <Show above="lg">
+        <GridItem area="aside" bg="green">
           <Sidebar />
-          <div className="my-table-container">
-            <div className="row">
-              <div className="col">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setNumFetch(numFentch + 1);
-                    fetchData();
-                  }}
-                >
-                  Refresh
-                </button>
-              </div>
-              <div className="col">
-                <h3>Refreshed {numFentch} times</h3>
-              </div>
-            </div>
-            <Table data={data} />
-          </div>
-        </>
-      )}
-      {!isAuthorized && (
-        <div className="my-form-holder">
-          <Login setAuthorized={setAuthorized} />
-        </div>
-      )}
-    </>
+        </GridItem>
+      </Show>
+      <GridItem area="main" bg="black">
+        <DashBoard />
+      </GridItem>
+    </Grid>
   );
 }
 

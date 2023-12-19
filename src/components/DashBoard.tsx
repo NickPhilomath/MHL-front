@@ -1,7 +1,19 @@
+import {
+  Table,
+  TableContainer,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from "@chakra-ui/react";
+import useData from "../hooks/useData";
 import { Truck } from "..";
 import { mps2mph } from "../util";
 
 const DashBoard = () => {
+  const { data, isLoading, error } = useData<Truck>("/trucks");
+
   // const filteredData = data.filter(
   //   (data: Truck) => !data.name.toLowerCase().includes("inactive")
   // );
@@ -27,42 +39,39 @@ const DashBoard = () => {
   // };
 
   return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th scope="col">#N</th>
-          <th scope="col">Name</th>
-          <th scope="col">Location</th>
-          <th scope="col">Speed (mph)</th>
-          <th scope="col">Weather</th>
-          <th scope="col">Wind (mph)</th>
-          <th scope="col">Temp (°C)</th>
-        </tr>
-      </thead>
-    </table>
+    <>
+      <TableContainer>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th isNumeric>#N</Th>
+              <Th>Name</Th>
+              <Th>Location</Th>
+              <Th isNumeric>Speed (mph)</Th>
+              <Th>Weather</Th>
+              <Th isNumeric>Wind (mph)</Th>
+              <Th isNumeric>Temp (°C)</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {data.map((truck, index) => {
+              return (
+                <Tr>
+                  <Td>{index + 1}</Td>
+                  <Td>{truck.name}</Td>
+                  <Td>{truck.location.reverseGeo.formattedLocation}</Td>
+                  <Td>{truck.location.speed}</Td>
+                  <Td>{truck.weather.status}</Td>
+                  <Td>{truck.weather.wind.speed}</Td>
+                  <Td>{truck.weather.temp}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
 export default DashBoard;
-
-// <tbody>
-//   {sortedData.map((truck, index) => {
-//     const windSpeed = mps2mph(truck.weather.wind.speed);
-//     return (
-//       <tr key={truck.id}>
-//         <td>{index + 1}</td>
-//         <td>{truck.name}</td>
-//         <td>
-//           {/* {truck.location.latitude} {truck.location.longitude} */}
-//           {truck.location.reverseGeo.formattedLocation}
-//         </td>
-//         <td>{truck.location.speed}</td>
-//         <td>{truck.weather.status}</td>
-//         <td className={"text-bold " + getWindTextColor(windSpeed)}>
-//           {windSpeed}
-//         </td>
-//         <td>{truck.weather.temp}</td>
-//       </tr>
-//     );
-//   })}
-// </tbody>;

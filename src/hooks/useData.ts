@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import apiClient from "../services/api-client";
 
 interface FetchResponse<T> {
-  count: number;
-  results: T[];
+  // count: number;
+  data: T[];
 }
 
 const useData = <T>(endpoint: string, requestConfig?: AxiosRequestConfig, deps?: any[]) => {
@@ -17,9 +17,9 @@ const useData = <T>(endpoint: string, requestConfig?: AxiosRequestConfig, deps?:
 
     setLoading(true);
     apiClient
-      .get<FetchResponse<T>>(endpoint, { signal: controller.signal, ...requestConfig })
+      .get<T[]>(endpoint, { signal: controller.signal, ...requestConfig })
       .then((res) => {
-        setData(res.data.results);
+        setData(res.data);
         setLoading(false);
       })
       .catch((err) => {

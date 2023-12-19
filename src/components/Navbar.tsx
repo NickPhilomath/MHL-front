@@ -3,7 +3,7 @@ import ColorModeSwitch from "./ColorModeSwitch";
 
 const Navbar = () => {
   return (
-    <HStack justifyContent="space-between" padding="25px">
+    <HStack justifyContent="space-between" padding={7}>
       <Text>Nav</Text>
       <ColorModeSwitch />
     </HStack>

@@ -6,7 +6,11 @@ import {
   Tr,
   Th,
   Td,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { DataTable } from "./DataTable";
 import useData from "../hooks/useData";
 import { Truck } from "..";
 import { mps2mph } from "../util";
@@ -14,13 +18,43 @@ import { mps2mph } from "../util";
 const DashBoard = () => {
   const { data, isLoading, error } = useData<Truck>("/trucks");
 
-  // const filteredData = data.filter(
-  //   (data: Truck) => !data.name.toLowerCase().includes("inactive")
-  // );
+  const columnHelper = createColumnHelper<Truck>();
 
-  // const sortedData = filteredData.sort((prev, next) => {
-  //   return next.weather.wind.speed - prev.weather.wind.speed;
-  // });
+  const columns = [
+    columnHelper.accessor("name", {
+      cell: (info) => info.getValue(),
+      header: "Name",
+    }),
+    columnHelper.accessor("location.reverseGeo.formattedLocation", {
+      cell: (info) => info.getValue(),
+      header: "Location",
+    }),
+    columnHelper.accessor("location.speed", {
+      cell: (info) => info.getValue(),
+      header: "Speed (mph)",
+      meta: {
+        isNumeric: true,
+      },
+    }),
+    columnHelper.accessor("weather.status", {
+      cell: (info) => info.getValue(),
+      header: "Weather",
+    }),
+    columnHelper.accessor("weather.wind.speed", {
+      cell: (info) => info.getValue(),
+      header: "Wind (mph)",
+      meta: {
+        isNumeric: true,
+      },
+    }),
+    columnHelper.accessor("weather.temp", {
+      cell: (info) => info.getValue(),
+      header: "Temp (°C)",
+      meta: {
+        isNumeric: true,
+      },
+    }),
+  ];
 
   // const getWindTextColor = (speed: number) => {
   //   /*
@@ -40,36 +74,55 @@ const DashBoard = () => {
 
   return (
     <>
-      <TableContainer>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th isNumeric>#N</Th>
-              <Th>Name</Th>
-              <Th>Location</Th>
-              <Th isNumeric>Speed (mph)</Th>
-              <Th>Weather</Th>
-              <Th isNumeric>Wind (mph)</Th>
-              <Th isNumeric>Temp (°C)</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.map((truck, index) => {
-              return (
-                <Tr>
-                  <Td>{index + 1}</Td>
-                  <Td>{truck.name}</Td>
-                  <Td>{truck.location.reverseGeo.formattedLocation}</Td>
-                  <Td>{truck.location.speed}</Td>
-                  <Td>{truck.weather.status}</Td>
-                  <Td>{truck.weather.wind.speed}</Td>
-                  <Td>{truck.weather.temp}</Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      {isLoading && (
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      )}
+      {error && (
+        <Text fontSize={30} color="tomato">
+          {error}
+        </Text>
+      )}
+
+      <DataTable data={data} columns={columns} />
+
+      {!true && (
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th isNumeric>#N</Th>
+                <Th>Name</Th>
+                <Th>Location</Th>
+                <Th isNumeric>Speed (mph)</Th>
+                <Th>Weather</Th>
+                <Th isNumeric>Wind (mph)</Th>
+                <Th isNumeric>Temp (°C)</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.map((truck, index) => {
+                return (
+                  <Tr>
+                    <Td isNumeric>{index + 1}</Td>
+                    <Td>{truck.name}</Td>
+                    <Td>{truck.location.reverseGeo.formattedLocation}</Td>
+                    <Td isNumeric>{truck.location.speed}</Td>
+                    <Td>{truck.weather.status}</Td>
+                    <Td isNumeric>{mps2mph(truck.weather.wind.speed)}</Td>
+                    <Td isNumeric>{truck.weather.temp}</Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
     </>
   );
 };

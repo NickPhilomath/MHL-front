@@ -4,7 +4,7 @@ import apiClient from "../services/api-client";
 
 interface FetchResponse<T> {
   // count: number;
-  data: T[];
+  result: T[];
 }
 
 const useData = <T>(endpoint: string, requestConfig?: AxiosRequestConfig, deps?: any[]) => {
@@ -14,12 +14,13 @@ const useData = <T>(endpoint: string, requestConfig?: AxiosRequestConfig, deps?:
 
   useEffect(() => {
     const controller = new AbortController();
-
+    // clean before fetching
     setLoading(true);
+    setError("")
     apiClient
-      .get<T[]>(endpoint, { signal: controller.signal, ...requestConfig })
+      .get<FetchResponse<T>>(endpoint, { signal: controller.signal, ...requestConfig })
       .then((res) => {
-        setData(res.data);
+        setData(res.data.result);
         setLoading(false);
       })
       .catch((err) => {
